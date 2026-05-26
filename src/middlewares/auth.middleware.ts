@@ -1,6 +1,6 @@
 import { createMiddleware } from "hono/factory";
 import { verify } from "hono/jwt";
-import { AppEnv } from "../types/env";
+import { AppEnv, AppJwtPayload } from "../types/env";
 
 export const authGuard = createMiddleware<AppEnv>(async (c, next) => {
   try {
@@ -19,11 +19,11 @@ export const authGuard = createMiddleware<AppEnv>(async (c, next) => {
     const token = authHeader.split(" ")[1];
 
     // 校验 token
-    const decodedPayload = await verify(
+    const decodedPayload = (await verify(
       token,
       process.env.JWT_ACCESS_SECRET as string,
       "HS256",
-    );
+    )) as AppJwtPayload;
     // 装填用户信息到上下文
     c.set("user", decodedPayload);
     await next();

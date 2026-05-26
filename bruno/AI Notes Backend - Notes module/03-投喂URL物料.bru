@@ -1,0 +1,22 @@
+meta {
+  name: 03-投喂URL物料
+  type: http
+  seq: 3
+}
+post {
+  url: {{baseUrl}}/api/notes/{{currentNoteId}}/materials
+  body: json
+  auth: bearer
+}
+auth:bearer {
+  token: {{accessToken}}
+}
+body:json {
+  {
+    "type": "url",
+    "rawContent": "https://hono.dev/docs/"
+  }
+}
+assert {
+  res.status: eq 201
+}

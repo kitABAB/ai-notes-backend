@@ -1,9 +1,0 @@
-{
-  "version": "1",
-  "name": "AI Notes Backend - Auth module",
-  "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".git"
-  ]
-}

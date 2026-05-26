@@ -6,7 +6,11 @@ import {
   text,
   integer,
   timestamp,
+  pgEnum,
+  varchar,
 } from "drizzle-orm/pg-core";
+import { aiStatusEnum, materialTypeEnum } from "./enum";
+import { relations } from "drizzle-orm";
 // ==========================================
 // 1. 用户表 (users)
 // ==========================================
@@ -27,21 +31,41 @@ export const users = pgTable("users", {
 
 export const notes = pgTable("notes", {
   id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
-  summary: text("summary"), // AI 自动生成的摘要，允许先为空
-
-  // 物理外键：通过 .references() 强行绑定到 users 表的 id 列
-  // onDelete: 'cascade' 代表如果这个用户被注销了，他名下的所有笔记自动被数据库连带删除，不留垃圾数据
-  authorId: integer("author_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(), // 外键关联用户
+  title: varchar("title", { length: 255 }),
+  content: text("content"),
+  aiStatus: aiStatusEnum("ai_status").default("gathering").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// 3. 物料表 (碎料筐)
 // ==========================================
-// 3. 标签表 (tags)
+export const materials = pgTable("materials", {
+  id: serial("id").primaryKey(),
+  noteId: integer("note_id")
+    .references(() => notes.id)
+    .notNull(), // 外键关联笔记
+  type: materialTypeEnum("type").notNull(),
+  rawContent: text("raw_content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const notesRelations = relations(notes, ({ many }) => ({
+  materials: many(materials), // 一篇笔记有多个物料
+}));
+
+export const materialsRelations = relations(materials, ({ one }) => ({
+  note: one(notes, {
+    fields: [materials.noteId],
+    references: [notes.id], // 一个物料属于一篇笔记
+  }),
+}));
+
+// ==========================================
+// 4. 标签表 (tags)
 // ==========================================
 
 export const tags = pgTable("tags", {
@@ -50,7 +74,7 @@ export const tags = pgTable("tags", {
 });
 
 // ==========================================
-// 4. 笔记与标签的「多对多中间连接表」 (notes_to_tags)
+// 5. 笔记与标签的「多对多中间连接表」 (notes_to_tags)
 // ==========================================
 export const notesToTags = pgTable(
   "notes_to_tags",

@@ -1,0 +1,22 @@
+meta {
+  name: 02-投喂文本物料
+  type: http
+  seq: 2
+}
+post {
+  url: {{baseUrl}}/api/notes/{{currentNoteId}}/materials
+  body: json
+  auth: bearer
+}
+auth:bearer {
+  token: {{accessToken}}
+}
+body:json {
+  {
+    "type": "text",
+    "rawContent": "这是我在知乎上看到的一段非常有用的技术解析..."
+  }
+}
+assert {
+  res.status: eq 201
+}

@@ -1,0 +1,22 @@
+meta {
+  name: 04-投喂非法物料类型(Zod拦截)
+  type: http
+  seq: 4
+}
+post {
+  url: {{baseUrl}}/api/notes/{{currentNoteId}}/materials
+  body: json
+  auth: bearer
+}
+auth:bearer {
+  token: {{accessToken}}
+}
+body:json {
+  {
+    "type": "video", 
+    "rawContent": "这是一个不支持的视频链接"
+  }
+}
+assert {
+  res.status: eq 400
+}

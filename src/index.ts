@@ -1,4 +1,5 @@
 import authFeature from "./features/auth/auth.controller";
+import notesFeature from "./features/notes/notes.controller";
 import { db } from "./db/index";
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -41,14 +42,10 @@ app.get("/health", (c) => {
 // 可以在这里挂载全局的跨域 (CORS)、日志 (Logger) 等中间件
 // app.use('*', cors());
 
-// 🌍 最终拼装魔法：
-// 将整个 authFeature 装甲车开入 /api/auth 主干道。
+// 🚀 路由挂载：把各个功能模块的路由接入主应用
 app.route("/api/auth", authFeature);
 
-// 最终对外暴露的真实物理路径将变成：
-// 🟢 POST /api/auth/register (自带 Zod 校验)
-// 🟢 POST /api/auth/login    (自带 Zod 校验)
-// 🔴 GET  /api/auth/me       (自带 JWT 护盾拦截)
+app.route("/api/notes", notesFeature);
 
 export default {
   port: process.env.PORT || 3000,
