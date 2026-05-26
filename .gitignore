@@ -20,3 +20,5 @@ bruno/**/report.html
 .bruno/
 bruno/**/.bru/
 bruno/**/.apps/
+
+bun.lock
