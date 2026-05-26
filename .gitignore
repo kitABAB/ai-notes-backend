@@ -1,0 +1,22 @@
+# deps
+node_modules/
+
+.env
+
+# 🐶 Bruno 自动化测试特区过滤规范
+# ==========================================
+
+# 1. 允许 bruno 核心资产通过（可写可不写，默认不忽略，这里作为明文规范声明）
+!bruno/
+
+# 2. 精准狙击本地测试报告：不管是在项目根目录，还是在 bruno 文件夹内生成的 HTML 报告，全部肉体封杀
+report.html
+*.report.html
+bruno/**/report.html
+
+# 3. 强行屏蔽 Bruno 的单机运行私货（本地状态缓存、本地Cookie、多开临时文件）
+.apps/
+.bru/
+.bruno/
+bruno/**/.bru/
+bruno/**/.apps/

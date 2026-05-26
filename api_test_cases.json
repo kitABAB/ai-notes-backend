@@ -1,0 +1,76 @@
+{
+    "info": {
+        "title": "AI 智能笔记脑 - 第二章自测用例契约",
+        "description": "覆盖用户、角色权限、多对多笔记增删改查的全场景自测集"
+    },
+    "item": [
+        {
+            "name": "【用户模块】01-正常注册新用户",
+            "request": {
+                "method": "POST",
+                "url": "http://localhost:3000/api/auth/register",
+                "body": {
+                    "mode": "json",
+                    "json": "{\n  \"email\": \"test_user@notes.com\",\n  \"password\": \"password123\"\n}"
+                }
+            },
+            "response_asserts": "断言状态码为 210 或 201，返回 JSON 包含 id 且 password_hash 必须不存在明文"
+        },
+        {
+            "name": "【用户模块】02-异常边界：重复注册相同邮箱",
+            "request": {
+                "method": "POST",
+                "url": "http://localhost:3000/api/auth/register",
+                "body": {
+                    "mode": "json",
+                    "json": "{\n  \"email\": \"test_user@notes.com\",\n  \"password\": \"password123\"\n}"
+                }
+            },
+            "response_asserts": "断言状态码为 400 或 409，返回 JSON 包含 error: 'Email already exists'"
+        },
+        {
+            "name": "【用户模块】03-正常登录获取双 Token",
+            "request": {
+                "method": "POST",
+                "url": "http://localhost:3000/api/auth/login",
+                "body": {
+                    "mode": "json",
+                    "json": "{\n  \"email\": \"test_user@notes.com\",\n  \"password\": \"password123\"\n}"
+                }
+            },
+            "response_asserts": "断言状态码为 200，返回必须包含 accessToken 和 refreshToken，且 role 为 USER"
+        },
+        {
+            "name": "【权限模块】04-安全边界：普通用户越权访问管理员看板",
+            "request": {
+                "method": "GET",
+                "url": "http://localhost:3000/api/admin/dashboard",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken_从上一步登录中获取}}"
+                    }
+                ]
+            },
+            "response_asserts": "断言状态码为 403 Forbidden，返回 message: 'Require ADMIN role'"
+        },
+        {
+            "name": "【笔记模块】05-核心多对多：创建带有多个标签的笔记",
+            "request": {
+                "method": "POST",
+                "url": "http://localhost:3000/api/notes",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}"
+                    }
+                ],
+                "body": {
+                    "mode": "json",
+                    "json": "{\n  \"title\": \"深度解析 Hono 路由\",\n  \"content\": \"今天学习了 Hono 的 RegExpRouter...\",\n  \"tags\": [\"AI\", \"Web标准\", \"Hono\"]\n}"
+                }
+            },
+            "response_asserts": "断言状态码为 201，返回数据中必须包含关联表写入成功的 noteId，且 tags 数组长度为 3"
+        }
+    ]
+}

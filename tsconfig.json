@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    /* 1. 核心大本营：强行加载 Bun 的原生类型定义，彻底解决 process.env 标红 */
+    "types": [
+      "@types/bun"
+    ],
+    /* 2. 环境与目标：针对现代 Bun 运行时的最优编译策略 */
+    "target": "ESNext",
+    "module": "ESNext",
+    // 确保 Drizzle 和 Hono 极其复杂的子路径、深层导出能被完美识别
+    "moduleResolution": "bundler",
+    "lib": [
+      "ESNext"
+    ],
+    /* 3. 拦截劫持：将项目中的 JSX 语法 100% 抽包给 Hono 的自研模板引擎 */
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    /* 4. 重工业严谨防御：开启最严格的代码审计，杜绝隐式 any 垃圾代码 */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    /* 5. 现代工程兼容 */
+    "esModuleInterop": true,
+    "skipLibCheck": true, // 跳过 node_modules 里的第三方库类型检查，大幅提升打包编译速度
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  /* 6. 扫描范围：死锁源码目录，并把咱们刚脱敏完的 drizzle 配置文件包含进来 */
+  "include": [
+    "src/**/*",
+    "drizzle.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "drizzle" // 排除 Drizzle Kit 自动生成的纯 SQL 迁移文件夹
+  ]
+}

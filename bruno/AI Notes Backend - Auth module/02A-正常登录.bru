@@ -1,0 +1,31 @@
+meta {
+  name: 02A-正常登录
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{testEmail}}",
+    "password": "securePassword123"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.accessToken: isDefined
+}
+
+script:post-response {
+  // 登录成功后，提取双 Token 供后续接口使用
+  if (res.getStatus() === 200) {
+    bru.setEnvVar("accessToken", res.getBody().accessToken);
+    bru.setEnvVar("refreshToken", res.getBody().refreshToken);
+  }
+}

@@ -1,0 +1,27 @@
+meta {
+  name: 01A-正常注册新用户
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+script:pre-request {
+  // 动态生成邮箱，防止每次自动化跑完后报错
+  bru.setEnvVar("testEmail", "test_" + Date.now() + "@zenava.com");
+}
+
+body:json {
+  {
+    "email": "{{testEmail}}",
+    "password": "securePassword123"
+  }
+}
+
+assert {
+  res.status: eq 201
+}

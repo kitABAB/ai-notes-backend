@@ -1,0 +1,20 @@
+meta {
+  name: 03-获取用户信息
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.user.email: eq {{testEmail}}
+}
