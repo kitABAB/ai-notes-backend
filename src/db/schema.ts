@@ -41,27 +41,33 @@ export const notes = pgTable("notes", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// 3. 物料表 (碎料筐)
+// ==========================================
+// 3. 物料表 (materials) - 碎料筐
 // ==========================================
 export const materials = pgTable("materials", {
   id: serial("id").primaryKey(),
   noteId: integer("note_id")
-    .references(() => notes.id)
-    .notNull(), // 外键关联笔记
+    .references(() => notes.id, { onDelete: "cascade" })
+    .notNull(),
   type: materialTypeEnum("type").notNull(),
-  rawContent: text("raw_content").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  rawContent: text("raw_content"), // 文本或 URL 类型直接存内容
+  storageKey: text("storage_key"), // RustFS/OSS 内部的相对路径追踪键
+  ossUrl: text("oss_url"),         // 公共资产的基准访问 URL
+  fileName: text("file_name"),     // 原始文件名（前端 UI 渲染用）
+  fileSize: integer("file_size"),   // 文件大小（字节，前端卡片展示用）
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const notesRelations = relations(notes, ({ many }) => ({
-  materials: many(materials), // 一篇笔记有多个物料
+// ==========================================
+// Drizzle 强类型关系映射
+// ==========================================
+export const notesRelations = relations(notes, ({ many, one }) => ({
+  materials: many(materials),
+  user: one(users, { fields: [notes.userId], references: [users.id] }),
 }));
 
 export const materialsRelations = relations(materials, ({ one }) => ({
-  note: one(notes, {
-    fields: [materials.noteId],
-    references: [notes.id], // 一个物料属于一篇笔记
-  }),
+  note: one(notes, { fields: [materials.noteId], references: [notes.id] }),
 }));
 
 // ==========================================
