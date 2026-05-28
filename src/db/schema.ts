@@ -94,3 +94,12 @@ export const notesToTags = pgTable(
     primaryKey({ columns: [table.noteId, table.tagId] }),
   ],
 );
+
+// 1. Material 类型 (用于从数据库 SELECT 出来的数据)
+export type Material = typeof materials.$inferSelect;
+
+// 2. NewMaterial 类型 (用于 INSERT 进数据库的数据，不包含缺省值比如 id, createdAt)
+export type NewMaterial = typeof materials.$inferInsert;
+
+export type User = typeof users.$inferSelect;
+export type Note = typeof notes.$inferSelect;

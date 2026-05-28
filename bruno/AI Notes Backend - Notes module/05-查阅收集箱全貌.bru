@@ -1,16 +1,19 @@
 meta {
   name: 05-查阅收集箱全貌
   type: http
-  seq: 5
+  seq: 6
 }
+
 get {
   url: {{baseUrl}}/api/notes/{{currentNoteId}}
   body: none
   auth: bearer
 }
+
 auth:bearer {
   token: {{accessToken}}
 }
+
 assert {
   res.status: eq 200
   res.body.data.materials: isDefined

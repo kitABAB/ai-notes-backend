@@ -1,0 +1,20 @@
+meta {
+  name: 06-触发AI总结
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/notes/{{currentNoteId}}/summary
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 202
+  res.body.message: isDefined
+}
